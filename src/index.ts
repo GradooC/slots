@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { ReelType } from "./types";
+import { Howl } from 'howler';
 import {
   SCREEN_WIDTH,
   SCREEN_HEIGHT,
@@ -46,6 +47,14 @@ const getRandomSprite = (): PIXI.Sprite => {
 
 // Variables
 const allReels: ReelType[] = [];
+
+// Sounds setup
+const reelSpin = new Howl({
+  src: ['assets\\sounds\\Reel_Spin.mp3']
+})
+const landing = new Howl({
+  src: ['assets\\sounds\\Landing_1.mp3']
+})
 
 //Create a Pixi Application
 const app = new Application({ width: SCREEN_WIDTH, height: SCREEN_HEIGHT });
@@ -97,7 +106,8 @@ function setup() {
   button.height = BTN_SIZE;
   button.position.set(SCREEN_WIDTH - BTN_SIZE, SCREEN_HEIGHT - BTN_SIZE);
   button.addListener('pointerdown', () => {
-    console.log('click')
+    console.log('click');
+    reelSpin.play();
   });
   app.stage.addChild(button);
 
