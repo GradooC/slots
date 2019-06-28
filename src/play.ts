@@ -9,5 +9,5 @@ function fn(sec: number) {
 }
 
 export default (allReels: ReelType[]) => {
-  allReels.map((reel, reelIndex) => (reel.easing = fn(reelIndex)));
+  allReels.map((reel, reelIndex) => (reel.easing = fn(reelIndex + 1)));
 };

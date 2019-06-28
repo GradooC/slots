@@ -12,4 +12,5 @@ export interface ReelType {
   container: PIXI.Container;
   symbols: PIXI.Sprite[];
   easing: EasingFunction;
+  rect: PIXI.Graphics[];
 }

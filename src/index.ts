@@ -49,6 +49,8 @@ const imgPaths = [
 
 /**
  * Utility function which returns a random symbol sprite
+ * @param mask { PIXI.Graphics }  Mask for viewport
+ * @return Sprite of the random symbol
  */
 const getRandomSprite = (mask: PIXI.Graphics): PIXI.Sprite => {
   // Make textures from symbols
@@ -62,8 +64,26 @@ const getRandomSprite = (mask: PIXI.Graphics): PIXI.Sprite => {
   // Return sprite for random texture
   const sprite = new Sprite(symbolsTextures[textureIndex]);
   sprite.mask = mask;
+  // Adjusting symbol size
+  sprite.scale.x = sprite.scale.y = Math.min(280 / sprite.width, 200 / sprite.height);
+  // Centering symbol inside the area;
+  sprite.x = (280 - sprite.width) / 2;
+  // sprite.y = (200 - sprite.height) / 2;
+
   return sprite;
 };
+
+// +++++++++++++++++++++++++++++
+const getRectangle = (x: number, y: number) => {
+  const graphics = new PIXI.Graphics();
+  graphics
+    .lineStyle(4, 0xFF3300, 1)
+    .drawRect(0, 0, 280, 200)
+
+  return graphics;
+};
+
+//++++++++++++++++++++++++++++++
 
 // Variables
 const allReels: ReelType[] = [];
@@ -77,7 +97,6 @@ document.body.appendChild(app.view);
 loader.add(imgPaths).load(setup);
 
 function setup() {
-
   // Create a mask for viewport
   const graphics = new PIXI.Graphics();
   graphics
@@ -90,10 +109,19 @@ function setup() {
   const background = new Sprite(
     loader.resources['assets\\img\\winningFrameBackground.jpg'].texture
   );
-  background.width = SCREEN_WIDTH;
-  background.height = SCREEN_HEIGHT;
-  background.mask = graphics;
-  app.stage.addChild(background);
+  const backgroundContainer = new Container();
+
+  // Fill all stage by background sprite
+  new Array(Math.ceil(SCREEN_WIDTH / background.width)).fill(null).forEach((_, xIndex) => {
+    new Array(Math.ceil(SCREEN_HEIGHT / background.height)).fill(null).forEach((_, yIndex) => {
+      const back = new Sprite(loader.resources['assets\\img\\winningFrameBackground.jpg'].texture);
+      back.x = xIndex * back.width;
+      back.y = yIndex * back.height;
+      backgroundContainer.addChild(back);
+    });
+  });
+
+  app.stage.addChild(backgroundContainer);
 
   // Create reels containers
   new Array(REELS_AMOUNT).fill(null).forEach((_, reelIndex) => {
@@ -105,6 +133,7 @@ function setup() {
     const reel: ReelType = {
       container: reelContainer,
       symbols: [],
+      rect: [],
       easing: () => 0
     };
     allReels.push(reel);
@@ -113,9 +142,18 @@ function setup() {
     new Array(SYMBOLS_AMOUNT).fill(null).forEach((_, symbolIndex) => {
       const symbol = getRandomSprite(graphics);
       symbol.y = symbolIndex * SYMBOL_SIZE - SYMBOL_SIZE;
-      symbol.mask = graphics;
       reel.symbols.push(symbol);
       reelContainer.addChild(symbol);
+
+      // For debug purpose ========
+      const rect = new PIXI.Graphics();
+      rect
+        .lineStyle(3, 0xFF3300, 1)
+        .drawRect(0, symbolIndex * SYMBOL_SIZE - SYMBOL_SIZE, 280, 200)
+        reel.rect.push(rect);
+        rect.zIndex = 1000;
+        reelContainer.addChild(rect);
+    // For debug purpose ==========
     });
 
     app.stage.addChild(reelContainer);
@@ -140,27 +178,30 @@ function setup() {
     app.stage.addChild(button);
   });
 
+
   //Start the game
   app.ticker.add(delta => {
-    allReels.forEach((reel, reelIndex) => {
+    allReels.forEach((reel) => {
       // if (!reel.easing) return;
 
       const dy = reel.easing();
-      reel.symbols.forEach((symbol, symbolIndex) => {
-        symbol.y += dy * 150;
-        // console.log('TCL: setup -> symbol.y', symbol.y);
+      reel.symbols.forEach((symbol) => {
+        symbol.y += dy * BASE_SPEED;
 
         // Delete out of screen symbols and add new symbols
         if (symbol.y > SYMBOL_SIZE * 5) {
           const newSymbol = getRandomSprite(graphics);
           newSymbol.y = -SYMBOL_SIZE;
-          // console.log('TCL: setup -> SYMBOL_SIZE', SYMBOL_SIZE);
           reel.container.addChild(newSymbol);
           reel.container.removeChild(symbol);
 
           // Update symbols array
           reel.symbols.unshift(newSymbol);
           reel.symbols.pop();
+        }
+
+        if (dy === 0) {
+          console.log('stop');
         }
       });
     });

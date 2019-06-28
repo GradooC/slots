@@ -7,4 +7,4 @@ export const MARGIN_VERTICAL = 50;
 export const MARGIN_HORIZONTAL = 100;
 export const REEL_WIDTH = (SCREEN_WIDTH - MARGIN_HORIZONTAL * 2) / REELS_AMOUNT;
 export const SYMBOL_SIZE = (SCREEN_HEIGHT - MARGIN_VERTICAL * 2) / (SYMBOLS_AMOUNT - 2);
-export const BASE_SPEED = 10;
+export const BASE_SPEED = 150;
