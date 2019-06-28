@@ -76,9 +76,7 @@ const getRandomSprite = (mask: PIXI.Graphics): PIXI.Sprite => {
 // +++++++++++++++++++++++++++++
 const getRectangle = (x: number, y: number) => {
   const graphics = new PIXI.Graphics();
-  graphics
-    .lineStyle(4, 0xFF3300, 1)
-    .drawRect(0, 0, 280, 200)
+  graphics.lineStyle(4, 0xff3300, 1).drawRect(0, 0, 280, 200);
 
   return graphics;
 };
@@ -147,19 +145,17 @@ function setup() {
 
       // For debug purpose ========
       const rect = new PIXI.Graphics();
-      rect
-        .lineStyle(3, 0xFF3300, 1)
-        .drawRect(0, symbolIndex * SYMBOL_SIZE - SYMBOL_SIZE, 280, 200)
-        reel.rect.push(rect);
-        rect.zIndex = 1000;
-        reelContainer.addChild(rect);
-    // For debug purpose ==========
+      rect.lineStyle(3, 0xff3300, 1).drawRect(0, symbolIndex * SYMBOL_SIZE - SYMBOL_SIZE, 280, 200);
+      reel.rect.push(rect);
+      reelContainer.addChild(rect);
+      // For debug purpose ==========
     });
 
     app.stage.addChild(reelContainer);
 
     // OverLay setup
     const overlay = new Sprite(loader.resources['assets\\img\\slotOverlay.png'].texture);
+    // overlay.x = 50;
     overlay.width = SCREEN_WIDTH;
     overlay.height = SCREEN_HEIGHT;
     app.stage.addChild(overlay);
@@ -178,14 +174,12 @@ function setup() {
     app.stage.addChild(button);
   });
 
-
   //Start the game
   app.ticker.add(delta => {
-    allReels.forEach((reel) => {
-      // if (!reel.easing) return;
-
+    allReels.forEach(reel => {
       const dy = reel.easing();
-      reel.symbols.forEach((symbol) => {
+
+      reel.symbols.forEach(symbol => {
         symbol.y += dy * BASE_SPEED;
 
         // Delete out of screen symbols and add new symbols
@@ -199,11 +193,23 @@ function setup() {
           reel.symbols.unshift(newSymbol);
           reel.symbols.pop();
         }
+      });
+      // For debug purpose ========
+      reel.rect.forEach(re => {
+        re.y += dy * BASE_SPEED;
+        console.log(re.y);
+        if (re.y > SYMBOL_SIZE * 5) {
+          const rect = new PIXI.Graphics();
+          rect.lineStyle(3, 0xff3300, 1).drawRect(0, -SYMBOL_SIZE, 280, 200);
+          reel.container.addChild(rect);
+          reel.container.removeChild(re);
 
-        if (dy === 0) {
-          console.log('stop');
+          // Update symbols array
+          reel.rect.unshift(rect);
+          reel.rect.pop();
         }
       });
+      // For debug purpose ==========
     });
   });
 }
