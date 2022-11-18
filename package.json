@@ -13,7 +13,7 @@
     "@types/d3-ease": "^1.0.8",
     "@types/howler": "^2.1.1",
     "copy-webpack-plugin": "^5.0.3",
-    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.2",
     "webpack": "^4.35.0",
